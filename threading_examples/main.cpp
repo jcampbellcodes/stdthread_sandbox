@@ -14,6 +14,7 @@
 #include "example1/RingBuffer.hpp"
 #include "resources.h"
 #include "example2/thread_stack.hpp"
+#include <condition_variable>
 #include <chrono>
 
 using namespace std::chrono_literals;
@@ -48,48 +49,61 @@ void Detach_Shutdown()
     // exercise 2:
     // using a ring buffer, detach a thread and synchronize its shutdown via this thread
     // (simulate .join() behavior but on a detached thread)
+    std::cout << "\n ============ DETACHED RING BUFFER EXAMPLE: this thread is: " << std::this_thread::get_id() <<  " ===============\n";
     
     // who owns the ring buffer?
     RingBuffer* toSecondary = new RingBuffer();
     RingBuffer* toPrimary = new RingBuffer();
-    std::thread t([&toSecondary, &toPrimary]{
+    std::condition_variable cond;
+    
+    std::mutex mtx;
+    
+    // start the background thread
+    std::thread t([&toSecondary, &toPrimary, &mtx, &cond]{
         int32_t count = 0;
-        
-        msgs msg;
-        while(toSecondary->PopFront(msg))
+        std::cout << "\n ============ Starting extra thread:" << std::this_thread::get_id() << " ===============\n";
+        msgs msg = msgs::keep_going;
+        while(msg != msgs::kill_thread) //
         {
-            switch (msg)
+            std::cout << "\n ============ Reading messages ===============\n";
+            
+            if(toSecondary->PopFront(msg)) // usually more complex message handling going on here
             {
-                case msgs::keep_going:
+                if(msg == msgs::keep_going)
+                {
+                    std::lock_guard<std::mutex> lck(mtx);
                     std::cout << "Count: " << count++ << "\n";
-                    break;
-                case msgs::kill_thread:
-                    toPrimary->PushBack(msgs::kill_thread);
-                    break;
-                default:
-                    break;
+                }
             }
+            std::this_thread::sleep_for(1ms);
         }
-        std::this_thread::sleep_for(10ms);
+        
+        // Gonna kill this thread! Let the foreground thread know so it can complete/stop blocking.
+        std::lock_guard<std::mutex> lck(mtx);
+        toPrimary->PushBack(msgs::kill_thread);
+        cond.notify_one();
     });
     
     t.detach();
     
     int32_t count = 0;
+
     while(count < 100)
     {
         toSecondary->PushBack(msgs::keep_going);
         count++;
     }
-    
+
+    std::cout << "\n ============ Sending kill message ===============\n";
     toSecondary->PushBack(msgs::kill_thread);
-    
-    msgs msg = msgs::keep_going;
-    while(msg != msgs::kill_thread)
-    {
+    std::cout << "\n ============ Sent kill message ===============\n";
+    std::unique_lock<std::mutex> lck(mtx);
+    cond.wait(lck, [&toPrimary]{
+        msgs msg = msgs::keep_going;
         toPrimary->PopFront(msg);
-    }
-    
+        return msg == msgs::kill_thread;
+    });
+    lck.unlock();
     std::cout << "finished!\n";
 }
 
@@ -177,8 +191,8 @@ void Queue_Interleaved_Pop()
     
 int main()
 {
-    //Print_Thread_Ids();
-    //Detach_Shutdown();
+    Print_Thread_Ids();
+    Detach_Shutdown();
     Stack_Interleaved_Pop();
     return 0;
 }

@@ -54,7 +54,7 @@ class threadPrinter
 public:
     void operator()()
     {
-        std::cout << "thread:" << std::this_thread::get_id();
+        std::cout << "\nthread:" << std::this_thread::get_id();
     };
 };
 
