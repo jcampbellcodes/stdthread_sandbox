@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF919384208698CC0005B8D4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF919383208698CC0005B8D4 /* main.cpp */; };
+		EF91938C2086AD910005B8D4 /* RingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF91938A2086AD910005B8D4 /* RingBuffer.cpp */; };
+		EFC5A6D320B1E752003977D4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC5A6D220B1E752003977D4 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,12 @@
 
 /* Begin PBXFileReference section */
 		EF919380208698CC0005B8D4 /* threading_examples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = threading_examples; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF919383208698CC0005B8D4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		EF91938A2086AD910005B8D4 /* RingBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RingBuffer.cpp; sourceTree = "<group>"; };
+		EF91938B2086AD910005B8D4 /* RingBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RingBuffer.hpp; sourceTree = "<group>"; };
+		EFC5A6CC20B1DFCC003977D4 /* thread_stack.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = thread_stack.hpp; sourceTree = "<group>"; };
+		EFC5A6D120B1E6E7003977D4 /* cond_queue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cond_queue.h; sourceTree = "<group>"; };
+		EFC5A6D220B1E752003977D4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		EFC5A6D420B1E822003977D4 /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +63,38 @@
 		EF919382208698CC0005B8D4 /* threading_examples */ = {
 			isa = PBXGroup;
 			children = (
-				EF919383208698CC0005B8D4 /* main.cpp */,
+				EFC5A6D020B1E6D2003977D4 /* example3 */,
+				EFC5A6CA20B1DF9C003977D4 /* example2 */,
+				EFC5A6C920B1DF84003977D4 /* example1 */,
+				EFC5A6D220B1E752003977D4 /* main.cpp */,
+				EFC5A6D420B1E822003977D4 /* resources.h */,
 			);
 			path = threading_examples;
+			sourceTree = "<group>";
+		};
+		EFC5A6C920B1DF84003977D4 /* example1 */ = {
+			isa = PBXGroup;
+			children = (
+				EF91938A2086AD910005B8D4 /* RingBuffer.cpp */,
+				EF91938B2086AD910005B8D4 /* RingBuffer.hpp */,
+			);
+			path = example1;
+			sourceTree = "<group>";
+		};
+		EFC5A6CA20B1DF9C003977D4 /* example2 */ = {
+			isa = PBXGroup;
+			children = (
+				EFC5A6CC20B1DFCC003977D4 /* thread_stack.hpp */,
+			);
+			path = example2;
+			sourceTree = "<group>";
+		};
+		EFC5A6D020B1E6D2003977D4 /* example3 */ = {
+			isa = PBXGroup;
+			children = (
+				EFC5A6D120B1E6E7003977D4 /* cond_queue.h */,
+			);
+			path = example3;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,7 +153,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF919384208698CC0005B8D4 /* main.cpp in Sources */,
+				EFC5A6D320B1E752003977D4 /* main.cpp in Sources */,
+				EF91938C2086AD910005B8D4 /* RingBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,16 +273,30 @@
 		EF919388208698CC0005B8D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0,
+					/Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0/boost,
+				);
+				LIBRARY_SEARCH_PATHS = /Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0/stage/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = /Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0;
 			};
 			name = Debug;
 		};
 		EF919389208698CC0005B8D4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0,
+					/Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0/boost,
+				);
+				LIBRARY_SEARCH_PATHS = /Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0/stage/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = /Users/jcampbell/git/tree/packages/sdk/boost/boost_1_64_0;
 			};
 			name = Release;
 		};
