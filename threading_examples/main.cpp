@@ -14,6 +14,7 @@
 #include "example1/RingBuffer.hpp"
 #include "resources.h"
 #include "example2/thread_stack.hpp"
+#include "example3/cond_queue.h"
 #include <condition_variable>
 #include <chrono>
 
@@ -152,34 +153,52 @@ void Stack_Interleaved_Pop()
 void Queue_Interleaved_Pop()
 {
     // two threads...one stack
-    thread_stack<vect4> s;
-    
+    cond_queue<vect4> q;
     // function that pushes 1000 vectors, pops 500, pushes 500, pops 1000
-    auto fn = [&s](){
+    auto fn = [&q](){
         for(float i = 0; i < 1000; i++)
         {
-            s.push({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
-            
+            q.push({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
         }
         
         for(float i = 0; i < 500; i++)
         {
             vect4 v = {0, 0, 0, 0};
-            s.pop(v);
+            q.try_pop(v);
             v.print();
         }
         
         for(float i = 0; i < 500; i++)
         {
-            s.push({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
+            q.push({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
         }
         
         for(float i = 0; i < 500; i++)
         {
             auto v = std::shared_ptr<vect4>();
-            v = s.pop();
+            v = q.wait_and_pop();
             v->print();
         }
+        
+        for(float i = 0; i < 500; i++)
+        {
+            vect4 v = {0, 0, 0, 0};
+            q.wait_and_pop(v);
+            v.print();
+        }
+        
+        for(float i = 0; i < 500; i++)
+        {
+            q.push({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
+        }
+        
+        for(float i = 0; i < 500; i++)
+        {
+            auto v = std::shared_ptr<vect4>();
+            v = q.try_pop();
+            v->print();
+        }
+        
     };
     
     std::thread t1(fn);
@@ -194,6 +213,7 @@ int main()
     Print_Thread_Ids();
     Detach_Shutdown();
     Stack_Interleaved_Pop();
+    Queue_Interleaved_Pop();
     return 0;
 }
 
