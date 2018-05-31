@@ -12,6 +12,7 @@
 #include <memory>
 #include <stack>
 #include <mutex>
+#include <iostream>
 
 enum empty_result
 {
@@ -38,7 +39,7 @@ public:
     {
         std::lock_guard<std::mutex> lck(m);
         data.push(val);
-        printf("\nThis thread (%d) is pushing.", std::this_thread::get_id());
+        std::cout << "\nThis thread ("<< std::this_thread::get_id() <<") is pushing.";
     }
     
     std::shared_ptr<T> pop()
@@ -48,7 +49,7 @@ public:
         {
             auto out = std::make_shared<T>(data.top());
             data.pop();
-            printf("\nThis thread (%d) is popping.", std::this_thread::get_id());
+        std::cout << "\nThis thread ("<< std::this_thread::get_id() <<") is popping.";
             return out;
         }
         return std::shared_ptr<T>();
@@ -61,7 +62,7 @@ public:
         {
             value = data.top();
             data.pop();
-            printf("\nThis thread (%d) is popping by reference.", std::this_thread::get_id());
+            std::cout << "\nThis thread ("<< std::this_thread::get_id() <<") is popping by reference.";
         }
     }
     

@@ -9,7 +9,12 @@
 #include "RingBuffer.hpp"
 
 // constructor
-RingBuffer::RingBuffer() : data{{}}, front(CIRCULAR_DATA_SIZE), back(CIRCULAR_DATA_SIZE), empty(true), full(false)
+RingBuffer::RingBuffer() :
+data{{}},
+front(CIRCULAR_DATA_SIZE),
+back(CIRCULAR_DATA_SIZE),
+empty(true),
+full(false)
 {
     
 };

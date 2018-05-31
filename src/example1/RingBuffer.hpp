@@ -23,7 +23,7 @@ enum msgs
 class CircularIndex
 {
 public:
-    CircularIndex(int32_t sz) : size(sz), mask(sz - 1), index(0) {}
+    CircularIndex(int32_t sz) : mask(sz - 1), index(0) {}
     
     // inc
     int operator++(int)
@@ -43,7 +43,6 @@ public:
     int32_t getIndex() const { return index; };
     
 private:
-    int32_t size;
     uint32_t mask;
     int32_t index;
 };
