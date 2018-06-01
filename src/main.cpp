@@ -308,16 +308,19 @@ void Background_Processing_Future()
     
     // .get() blocks until the promise is fulfilled
     std::cout << "\nHere is the answer: " << f.get();
+    
+    worker.join();
 }
     
 int main()
 {
-    Print_Thread_Ids();
-    Detach_Shutdown();
-    Stack_Interleaved_Pop();
-    Queue_Interleaved_Pop();
-    Background_Processing_Async();
-    Background_Processing_Packaged_Task();
+    //Print_Thread_Ids();
+    //Detach_Shutdown();
+    //Stack_Interleaved_Pop();
+    //Queue_Interleaved_Pop();
+    //Background_Processing_Async();
+    //Background_Processing_Packaged_Task();
+    Background_Processing_Future();
     return 0;
 }
 
