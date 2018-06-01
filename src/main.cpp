@@ -17,6 +17,7 @@
 #include "example3/cond_queue.h"
 #include <condition_variable>
 #include <chrono>
+#include <future>
 
 using namespace std::chrono_literals;
 
@@ -207,6 +208,107 @@ void Queue_Interleaved_Pop()
     t1.join();
     t2.join();
 }
+
+void Background_Processing_Async()
+{
+    // multiply half a million vectors in a packaged task, print when done.
+    auto mult = [] {
+        
+        std::vector<float> collection;
+        for(int32_t i = 0; i < 500; i++)
+        {
+            vect4 v({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
+            collection.push_back(v.dot(v));
+        }
+        for(auto i : collection)
+        {
+            std::cout << std::endl << i << std::endl;
+        }
+        std::cout << "Alright got that work done... time for a break...";
+        std::this_thread::sleep_for(2.5s);
+        return "Huzzah!\n";
+    };
+    auto f = std::async(mult);
+
+    // doing our work in the meantime
+    for(int32_t i = 0; i < 500; i++)
+    {
+        vect4 v({1111.0f, 1111.0f, 1111.0f, 1111.0f});
+        v.print();
+    }
+    
+    std::cout << "\nHere is the answer: " << f.get();
+}
+
+
+void Background_Processing_Packaged_Task()
+{
+    // multiply half a million vectors in a packaged task, print when done.
+    // print a bunch of stuff on the main thread
+    auto mult = [] {
+        
+        std::vector<float> collection;
+        for(int32_t i = 0; i < 500; i++)
+        {
+            vect4 v({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
+            collection.push_back(v.dot(v));
+        }
+        for(auto i : collection)
+        {
+            std::cout << std::endl << std::endl << i << std::endl;
+        }
+        std::cout << "\nAlright got that work done... time for a break...\n";
+        std::this_thread::sleep_for(2.5s);
+        std::cout << "\nHuzzah!";
+    };
+    std::packaged_task<void()> bg_task(mult);
+    std::thread t(std::move(bg_task));
+    
+    // doing our work in the meantime
+    for(int32_t i = 0; i < 500; i++)
+    {
+        vect4 v({1111.0f, 1111.0f, 1111.0f, 1111.0f});
+        v.print();
+    }
+    
+    t.join();
+}
+
+void Background_Processing_Future()
+{
+    // multiply half a million vectors in a packaged task, print when done.
+    auto p = std::promise<std::string>();
+    auto f = p.get_future();
+    auto mult = [&p] {
+        
+        std::vector<float> collection;
+        for(int32_t i = 0; i < 500; i++)
+        {
+            vect4 v({1.0f/i, 2.0f/i, 3.0f/i, 4.0f/i});
+            collection.push_back(v.dot(v));
+        }
+        for(auto i : collection)
+        {
+            std::cout << std::endl << i << std::endl;
+        }
+        std::cout << "Alright got that work done... time for a break...";
+        std::this_thread::sleep_for(2.5s);
+        
+        // Fulfill the promise!
+        p.set_value("Huzzah!\n");
+    };
+    std::thread worker(mult);
+    
+    // doing our work in the meantime
+    for(int32_t i = 0; i < 500; i++)
+    {
+        vect4 v({1111.0f, 1111.0f, 1111.0f, 1111.0f});
+        v.print();
+    }
+    
+    // .get() blocks until the promise is fulfilled
+    std::cout << "\nHere is the answer: " << f.get();
+}
     
 int main()
 {
@@ -214,6 +316,8 @@ int main()
     Detach_Shutdown();
     Stack_Interleaved_Pop();
     Queue_Interleaved_Pop();
+    Background_Processing_Async();
+    Background_Processing_Packaged_Task();
     return 0;
 }
 
